@@ -2,7 +2,7 @@
 # Copy this file to terraform.tfvars and fill in the values
 
 # AWS Region
-aws_region = "us-east-1"
+aws_region = "sa-east-1" # São Paulo
 
 # Project name (used for resource naming)
 project_name = "knight-online-dev"

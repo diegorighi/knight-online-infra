@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "us-east-1"
+  default     = "sa-east-1" # São Paulo - lower latency for Brazil
 }
 
 variable "project_name" {
