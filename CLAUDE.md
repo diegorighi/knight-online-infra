@@ -1,11 +1,25 @@
 # Knight Online Private Server - Infrastructure
 
 ## Projeto
-Servidor privado de Knight Online 12xx hospedado na AWS com infraestrutura gerenciada via Terraform.
+Servidor privado de Knight Online **v1299** hospedado na AWS com infraestrutura gerenciada via Terraform.
 
-## Repositório
+**Versão:** 1299 (2009-2010) - El Morad Castle, Luferson Castle, Ronark Land
+
+## Repositórios
+
+### Infraestrutura (Terraform)
 - **GitHub:** https://github.com/diegorighi/knight-online-infra
 - **Local:** `/Users/diegorighi/Desenvolvimento/knight-online-infra`
+
+### Server Files (OpenKO v1299)
+- **GitHub:** https://github.com/Open-KO/KnightOnline
+- **Local:** `/Users/diegorighi/Desenvolvimento/knight-online/server-files-1299`
+- **Conteúdo:** AIServer, Aujard, Ebenezer, Client, Tools
+
+### Database Scripts
+- **GitHub:** https://github.com/ko4life-net/ko-db
+- **Local:** `/Users/diegorighi/Desenvolvimento/knight-online/database`
+- **Conteúdo:** Schema SQL, Stored Procedures, Data inserts
 
 ## AWS Account
 - **Account ID:** 530184476864
