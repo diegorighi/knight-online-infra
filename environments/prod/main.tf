@@ -1,0 +1,106 @@
+# Knight Online Private Server - Production Environment
+
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  # Recommended for production: Use S3 backend
+  # backend "s3" {
+  #   bucket         = "knight-online-terraform-state"
+  #   key            = "prod/terraform.tfstate"
+  #   region         = "us-east-1"
+  #   encrypt        = true
+  #   dynamodb_table = "terraform-locks"
+  # }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = "prod"
+      ManagedBy   = "Terraform"
+    }
+  }
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+# VPC Module
+module "vpc" {
+  source = "../../modules/vpc"
+
+  project_name        = var.project_name
+  vpc_cidr            = var.vpc_cidr
+  public_subnet_cidrs = var.public_subnet_cidrs
+  availability_zones  = slice(data.aws_availability_zones.available.names, 0, 2)
+
+  tags = local.common_tags
+}
+
+# Security Groups Module
+module "security_groups" {
+  source = "../../modules/security-groups"
+
+  project_name   = var.project_name
+  vpc_id         = module.vpc.vpc_id
+  admin_ip_cidrs = var.admin_ip_cidrs
+
+  tags = local.common_tags
+}
+
+# Game Server Module (Windows) - Production specs
+module "game_server" {
+  source = "../../modules/ec2-game-server"
+
+  project_name       = var.project_name
+  instance_type      = var.game_server_instance_type
+  subnet_id          = module.vpc.public_subnet_ids[0]
+  availability_zone  = data.aws_availability_zones.available.names[0]
+  security_group_ids = [module.security_groups.game_server_sg_id]
+  root_volume_size   = var.game_server_volume_size
+  create_elastic_ip  = true
+  create_data_volume = var.create_data_volume
+  data_volume_size   = var.data_volume_size
+  create_key_pair    = var.create_key_pair
+  public_key         = var.public_key
+  key_name           = var.existing_key_name
+
+  tags = local.common_tags
+}
+
+# Web Server Module (Linux)
+module "web_server" {
+  source = "../../modules/ec2-web-server"
+  count  = var.create_web_server ? 1 : 0
+
+  project_name       = var.project_name
+  instance_type      = var.web_server_instance_type
+  subnet_id          = module.vpc.public_subnet_ids[0]
+  availability_zone  = data.aws_availability_zones.available.names[0]
+  security_group_ids = [module.security_groups.web_server_sg_id]
+  root_volume_size   = var.web_server_volume_size
+  create_elastic_ip  = true
+  create_key_pair    = var.create_key_pair
+  public_key         = var.public_key
+  key_name           = var.existing_key_name
+
+  tags = local.common_tags
+}
+
+locals {
+  common_tags = {
+    Project     = var.project_name
+    Environment = "prod"
+  }
+}
