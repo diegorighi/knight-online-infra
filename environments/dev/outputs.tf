@@ -28,6 +28,16 @@ output "web_server_instance_id" {
   value       = var.create_web_server ? module.web_server[0].instance_id : null
 }
 
+output "rds_endpoint" {
+  description = "RDS MSSQL endpoint"
+  value       = var.create_rds ? module.rds_mssql[0].endpoint : null
+}
+
+output "rds_address" {
+  description = "RDS MSSQL hostname"
+  value       = var.create_rds ? module.rds_mssql[0].address : null
+}
+
 output "connection_info" {
   description = "Connection information"
   value = <<-EOF
@@ -41,12 +51,14 @@ output "connection_info" {
       RDP Port: 3389
       Game Port: 15001
       Login Port: 15100
-      MSSQL Port: 1433
+
+    ${var.create_rds ? "RDS MSSQL DATABASE:\n      Endpoint: ${module.rds_mssql[0].endpoint}\n      Port: 1433\n      User: ${var.rds_username}\n      Connect from Mac: Azure Data Studio" : "RDS: Not created"}
 
     ${var.create_web_server ? "WEB SERVER (Linux):\n      IP: ${module.web_server[0].public_ip}\n      HTTP: 80\n      HTTPS: 443\n      SSH: 22" : "WEB SERVER: Not created"}
 
     CLIENT CONFIG (Ebenezer.ini):
       SERVER_IP = ${module.game_server.public_ip}
+      ${var.create_rds ? "DB_SERVER = ${module.rds_mssql[0].address}" : ""}
 
     ============================================
   EOF
@@ -55,4 +67,9 @@ output "connection_info" {
 output "rdp_connection_command" {
   description = "RDP connection info"
   value       = "Connect via RDP to: ${module.game_server.public_ip}:3389"
+}
+
+output "azure_data_studio_connection" {
+  description = "Azure Data Studio connection string"
+  value       = var.create_rds ? "Server: ${module.rds_mssql[0].address},1433 | User: ${var.rds_username}" : null
 }

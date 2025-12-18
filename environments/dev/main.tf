@@ -98,6 +98,26 @@ module "web_server" {
   tags = local.common_tags
 }
 
+# RDS MSSQL Module - Knight Online Database
+module "rds_mssql" {
+  source = "../../modules/rds-mssql"
+  count  = var.create_rds ? 1 : 0
+
+  project_name               = var.project_name
+  vpc_id                     = module.vpc.vpc_id
+  subnet_ids                 = module.vpc.public_subnet_ids
+  allowed_security_group_ids = [module.security_groups.game_server_sg_id]
+  admin_ip_cidrs             = var.admin_ip_cidrs
+  instance_class             = var.rds_instance_class
+  allocated_storage          = var.rds_allocated_storage
+  db_username                = var.rds_username
+  db_password                = var.rds_password
+  publicly_accessible        = true # For Mac access via Azure Data Studio
+  skip_final_snapshot        = true # Dev environment
+
+  tags = local.common_tags
+}
+
 locals {
   common_tags = {
     Project     = var.project_name

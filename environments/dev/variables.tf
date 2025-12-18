@@ -81,3 +81,34 @@ variable "web_server_volume_size" {
   type        = number
   default     = 8 # Minimal for Linux
 }
+
+# RDS MSSQL - Knight Online Database
+variable "create_rds" {
+  description = "Create RDS MSSQL instance"
+  type        = bool
+  default     = true
+}
+
+variable "rds_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro" # Smallest for MSSQL (~$15/month)
+}
+
+variable "rds_allocated_storage" {
+  description = "RDS allocated storage in GB"
+  type        = number
+  default     = 20
+}
+
+variable "rds_username" {
+  description = "RDS master username"
+  type        = string
+  default     = "koadmin"
+}
+
+variable "rds_password" {
+  description = "RDS master password"
+  type        = string
+  sensitive   = true
+}
