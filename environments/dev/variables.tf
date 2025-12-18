@@ -50,20 +50,20 @@ variable "existing_key_name" {
   default     = ""
 }
 
-# Game Server
+# Game Server - FREE TIER
 variable "game_server_instance_type" {
   description = "Instance type for game server"
   type        = string
-  default     = "t3.medium" # 2 vCPU, 4GB RAM - Good for testing
+  default     = "t2.micro" # 1 vCPU, 1GB RAM - FREE TIER (750h/month first year)
 }
 
 variable "game_server_volume_size" {
   description = "Root volume size for game server (GB)"
   type        = number
-  default     = 50
+  default     = 30 # FREE TIER limit (30GB EBS)
 }
 
-# Web Server
+# Web Server - Disabled by default for Free Tier (only 1 instance free)
 variable "create_web_server" {
   description = "Create web server for panel"
   type        = bool
@@ -73,11 +73,11 @@ variable "create_web_server" {
 variable "web_server_instance_type" {
   description = "Instance type for web server"
   type        = string
-  default     = "t3.small" # 2 vCPU, 2GB RAM
+  default     = "t2.micro" # FREE TIER eligible
 }
 
 variable "web_server_volume_size" {
   description = "Root volume size for web server (GB)"
   type        = number
-  default     = 20
+  default     = 8 # Minimal for Linux
 }

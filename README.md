@@ -95,8 +95,17 @@ terraform output connection_info
 
 | Environment | Instance Type | Monthly Cost (est.) |
 |-------------|---------------|---------------------|
-| Dev | t3.medium (4GB) | ~$35-45 |
+| Dev | t2.micro (1GB) | **FREE** (first 12 months) |
 | Prod | t3.large (8GB) | ~$75-90 |
+
+### AWS Free Tier (Dev Environment)
+
+- **EC2 t2.micro**: 750 hours/month FREE (first 12 months)
+- **EBS Storage**: 30GB FREE (first 12 months)
+- **Elastic IP**: FREE when attached to running instance
+- **Data Transfer**: 15GB/month outbound FREE
+
+> **Note**: t2.micro (1GB RAM) is limited for Knight Online. Good for testing configs, but gameplay may be slow with multiple players.
 
 ## Security Notes
 
@@ -140,13 +149,15 @@ terraform output web_server_public_ip
 
 ## Estimated Costs (USD/month)
 
-| Resource | Dev | Prod |
-|----------|-----|------|
-| EC2 Game Server | $30 | $60 |
+| Resource | Dev (Free Tier) | Prod |
+|----------|-----------------|------|
+| EC2 Game Server | **$0** | $60 |
 | EC2 Web Server | - | $15 |
-| EBS Storage | $5 | $20 |
-| Elastic IP | $4 | $8 |
-| **Total** | **~$39** | **~$103** |
+| EBS Storage (30GB) | **$0** | $20 |
+| Elastic IP | **$0** | $8 |
+| **Total** | **$0** | **~$103** |
+
+> Free Tier valid for first 12 months of AWS account. After that, Dev costs ~$15/month.
 
 ## License
 

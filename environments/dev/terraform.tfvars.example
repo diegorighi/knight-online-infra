@@ -1,4 +1,4 @@
-# Knight Online Server - Development Environment Variables
+# Knight Online Server - Development Environment Variables (FREE TIER)
 # Copy this file to terraform.tfvars and fill in the values
 
 # AWS Region
@@ -19,11 +19,20 @@ existing_key_name = "your-existing-key-name"
 # create_key_pair = true
 # public_key = "ssh-rsa AAAAB3..."
 
-# Game Server configuration
-game_server_instance_type = "t3.medium"  # 2 vCPU, 4GB RAM (~$30/month)
-game_server_volume_size   = 50           # GB
+# ============================================
+# FREE TIER CONFIGURATION
+# ============================================
+# - t2.micro: 750 hours/month FREE (first 12 months)
+# - EBS: 30GB FREE (first 12 months)
+# - Elastic IP: FREE when attached to running instance
+# ============================================
 
-# Web Server (optional)
+# Game Server - FREE TIER
+game_server_instance_type = "t2.micro"   # 1 vCPU, 1GB RAM - FREE
+game_server_volume_size   = 30           # GB - FREE TIER limit
+
+# Web Server - DISABLED for Free Tier (only 1 t2.micro free)
+# Enable only if you're OK with charges or use the same server
 create_web_server         = false
-web_server_instance_type  = "t3.small"   # 2 vCPU, 2GB RAM (~$15/month)
-web_server_volume_size    = 20           # GB
+# web_server_instance_type  = "t2.micro"
+# web_server_volume_size    = 8
