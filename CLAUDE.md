@@ -87,12 +87,19 @@ modules/
 ### Game Server (EC2 Windows)
 | Atributo | Valor |
 |----------|-------|
-| Instance ID | `i-071d5ef7118747821` |
+| Instance ID | `i-092f4b48d927d4671` |
 | IP Publico (Elastic IP) | `56.125.141.150` |
-| IP Privado | `10.0.1.154` |
+| IP Privado | `10.0.1.146` |
 | Tipo | `t2.micro` (Free Tier) |
 | AMI | Windows Server 2022 |
-| Key Pair | `macOS-keypair2024` |
+| Key Pair | `macOS-keypair2025` |
+
+### Credenciais RDP (Windows)
+| Atributo | Valor |
+|----------|-------|
+| Host | `56.125.141.150:3389` |
+| Usuario | `Administrator` |
+| Senha | `Tv(%yvNGpIOT6Q*wKO7U8N1D&%JsDro!` |
 
 ### RDS MSSQL
 | Atributo | Valor |
@@ -246,5 +253,5 @@ terraform apply
 
 ### Obter senha do Windows (RDP)
 ```bash
-aws ec2 get-password-data --instance-id i-071d5ef7118747821 --priv-launch-key ~/.ssh/macOS-keypair2024.pem --query PasswordData --output text
+aws ec2 get-password-data --instance-id i-092f4b48d927d4671 --priv-launch-key ~/macOS-keypair2025.pem --region sa-east-1 --query PasswordData --output text
 ```
