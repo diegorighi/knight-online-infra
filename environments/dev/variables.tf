@@ -54,7 +54,7 @@ variable "existing_key_name" {
 variable "game_server_instance_type" {
   description = "Instance type for game server"
   type        = string
-  default     = "t2.micro" # 1 vCPU, 1GB RAM - FREE TIER (750h/month first year)
+  default     = "t3.large" # 2 vCPU, 8GB RAM - ~$64/month
 }
 
 variable "game_server_volume_size" {
