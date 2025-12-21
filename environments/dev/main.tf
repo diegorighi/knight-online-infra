@@ -75,6 +75,7 @@ module "game_server" {
   create_key_pair    = var.create_key_pair
   public_key         = var.public_key
   key_name           = var.existing_key_name
+  enable_ssm         = true
 
   tags = local.common_tags
 }

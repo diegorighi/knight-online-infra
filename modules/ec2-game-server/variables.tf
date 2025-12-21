@@ -83,3 +83,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_ssm" {
+  description = "Enable AWS Systems Manager (SSM) for remote management"
+  type        = bool
+  default     = true
+}

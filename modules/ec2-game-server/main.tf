@@ -1,5 +1,42 @@
 # EC2 Game Server Module - Windows Server for Knight Online
 
+# IAM Role for SSM
+resource "aws_iam_role" "ssm_role" {
+  count = var.enable_ssm ? 1 : 0
+  name  = "${var.project_name}-ssm-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+# Attach SSM policy to role
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  count      = var.enable_ssm ? 1 : 0
+  role       = aws_iam_role.ssm_role[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# Instance Profile for EC2
+resource "aws_iam_instance_profile" "ssm_profile" {
+  count = var.enable_ssm ? 1 : 0
+  name  = "${var.project_name}-ssm-profile"
+  role  = aws_iam_role.ssm_role[0].name
+
+  tags = var.tags
+}
+
 # Get latest Windows Server 2022 AMI
 data "aws_ami" "windows_2022" {
   most_recent = true
@@ -46,6 +83,7 @@ resource "aws_instance" "game_server" {
   vpc_security_group_ids = var.security_group_ids
   subnet_id              = var.subnet_id
   availability_zone      = var.availability_zone
+  iam_instance_profile   = var.enable_ssm ? aws_iam_instance_profile.ssm_profile[0].name : null
 
   root_block_device {
     volume_size           = var.root_volume_size
