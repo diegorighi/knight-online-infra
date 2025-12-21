@@ -82,18 +82,47 @@ modules/
 └── rds-mssql/           # RDS SQL Server Express
 ```
 
-## Credenciais
+## Infraestrutura Provisionada (2024-12-21)
+
+### Game Server (EC2 Windows)
+| Atributo | Valor |
+|----------|-------|
+| Instance ID | `i-071d5ef7118747821` |
+| IP Publico (Elastic IP) | `56.125.141.150` |
+| IP Privado | `10.0.1.154` |
+| Tipo | `t2.micro` (Free Tier) |
+| AMI | Windows Server 2022 |
+| Key Pair | `macOS-keypair2024` |
 
 ### RDS MSSQL
-- **Endpoint:** (gerado após apply)
-- **Port:** 1433
-- **Username:** `koadmin`
-- **Password:** `U9UZ00OWwE89TN4b`
+| Atributo | Valor |
+|----------|-------|
+| Endpoint | `knight-online-dev-mssql.cneocl9ggplh.sa-east-1.rds.amazonaws.com` |
+| Porta | `1433` |
+| Usuario | `koadmin` |
+| Senha | `U9UZ00OWwE89TN4b` |
+| Tipo | `db.t3.micro` |
+| Engine | SQL Server Express 15.00 |
+| Storage | 20GB (max 50GB autoscaling) |
 
-### EC2 Windows
-- **Key Pair:** `macOS-keypair2024`
-- **RDP Port:** 3389
-- **Admin IP liberado:** `189.78.39.245/32`
+### VPC e Rede
+| Atributo | Valor |
+|----------|-------|
+| VPC ID | `vpc-0e6d1664229a0a59b` |
+| CIDR | `10.0.0.0/16` |
+| Subnet 1 | `subnet-0965f63fbeed507d9` (sa-east-1a) |
+| Subnet 2 | `subnet-0e2745b8329180cdb` (sa-east-1b) |
+| Internet Gateway | `igw-0edb482b65c9baaac` |
+
+### Security Groups
+| SG | ID | Portas |
+|----|----|----|
+| Game Server | `sg-03596973fc345a5e7` | 15001, 15100, 3389, 1433 |
+| Web Server | `sg-02adf03e87bf8f301` | 80, 443, 22 |
+| RDS | `sg-0bafd08d51af350ae` | 1433 |
+
+### Admin Access
+- **IP liberado:** `189.78.39.245/32`
 
 ## Portas Knight Online
 
@@ -126,12 +155,11 @@ terraform output
 terraform output connection_info
 ```
 
-## Conexão do Mac
+## Conexao do Mac
 
 ### Azure Data Studio (MSSQL)
 ```
-Server: <rds_endpoint>
-Port: 1433
+Server: knight-online-dev-mssql.cneocl9ggplh.sa-east-1.rds.amazonaws.com,1433
 Authentication: SQL Login
 User: koadmin
 Password: U9UZ00OWwE89TN4b
@@ -140,8 +168,17 @@ Password: U9UZ00OWwE89TN4b
 ### RDP (Windows Server)
 ```
 App: Microsoft Remote Desktop
-Host: <game_server_public_ip>
+Host: 56.125.141.150
 Port: 3389
+```
+
+### Configuracao Server Files (Server.ini / Ebenezer.ini)
+```ini
+SERVER_IP = 56.125.141.150
+DB_SERVER = knight-online-dev-mssql.cneocl9ggplh.sa-east-1.rds.amazonaws.com
+DB_PORT = 1433
+DB_USER = koadmin
+DB_PASS = U9UZ00OWwE89TN4b
 ```
 
 ## Proteção DDoS
@@ -172,15 +209,15 @@ Port: 3389
 - Backups automáticos
 - Custo aceitável (~$15/mês)
 
-## Próximos Passos
+## Proximos Passos
 
-1. [ ] Aplicar Terraform (`terraform apply`)
-2. [ ] Conectar RDP no Windows Server
-3. [ ] Instalar Visual C++ Redistributables
+1. [x] Aplicar Terraform (`terraform apply`) - FEITO 2024-12-21
+2. [ ] Conectar RDP no Windows Server (56.125.141.150:3389)
+3. [ ] Instalar Visual C++ Redistributables (script ja incluso no user_data)
 4. [ ] Conectar Azure Data Studio no RDS
-5. [ ] Importar databases (KNIGHT_ONLINE, ACCOUNT_DB)
-6. [ ] Copiar server files e configurar .ini
-7. [ ] Testar conexão do cliente
+5. [ ] Importar databases (KNIGHT_ONLINE, ACCOUNT_DB) do repo ko-db
+6. [ ] Copiar server files e configurar .ini com IPs acima
+7. [ ] Testar conexao do cliente
 
 ## Arquivos Importantes
 
@@ -202,7 +239,12 @@ admin_ip_cidrs = ["NOVO.IP.AQUI/32"]
 terraform apply
 ```
 
-### RDS não conecta?
-1. Verificar se IP está no Security Group
-2. Verificar se RDS está `publicly_accessible = true`
-3. Testar com telnet: `nc -zv <rds_endpoint> 1433`
+### RDS nao conecta?
+1. Verificar se IP esta no Security Group
+2. Verificar se RDS esta `publicly_accessible = true`
+3. Testar com: `nc -zv knight-online-dev-mssql.cneocl9ggplh.sa-east-1.rds.amazonaws.com 1433`
+
+### Obter senha do Windows (RDP)
+```bash
+aws ec2 get-password-data --instance-id i-071d5ef7118747821 --priv-launch-key ~/.ssh/macOS-keypair2024.pem --query PasswordData --output text
+```
